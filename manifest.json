@@ -1,0 +1,26 @@
+{
+  "manifest_version": 2,
+
+  "name": "Pyco report",
+  "description": "This is the extension to extract report data from Pyco system",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "report.html"
+  },
+ "background": {
+    "persistent": false,
+    "scripts": ["background.js"]
+  },
+  "permissions": [
+    "tabs",
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://jira.pyramid-consulting.com/jira/*"],
+      "js": ["jquery.js", "jira-injection.js"]
+    }
+  ]
+}
