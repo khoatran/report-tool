@@ -20,7 +20,8 @@
   "content_scripts": [
     {
       "matches": ["https://jira.pyramid-consulting.com/jira/*"],
-      "js": ["jquery.js", "jira-injection.js"]
+      "js": ["jira-injection.js"]
     }
-  ]
+  ],
+   "web_accessible_resources": ["jquery.js"]
 }
