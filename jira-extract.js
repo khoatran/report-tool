@@ -1,11 +1,14 @@
-var rowType = ["Blocker", "Critical", "Major", "Normal", "Minor", "Trivial", "Enhancement", "Total"];
-var colType = ["New", "InProgress", "Resolved", "Verified", "Reopened", "Closed", "Total"];
+var rowType = [ "Blocker", "Critical", "Major", "Normal", "Minor", "Trivial",
+		"Enhancement", "Total" ];
+var colType = [ "New", "InProgress", "Resolved", "Verified", "Reopened",
+		"Closed", "Total" ];
 function getRowType(rowIdx) {
-	return rowType[rowIdx - 2]; 
+	return rowType[rowIdx - 2];
 }
 function getColType(coldIdx) {
-	return colType[coldIdx]; 
+	return colType[coldIdx];
 }
+
 function extractBugData() {
 	var rows = $($("table")[4]).find("tbody").find("tr");
 	var rowIdx = 0;
@@ -28,10 +31,23 @@ function extractBugData() {
 			fieldName = getColType(coldIdx);
 			item[fieldName] = parseInt($(column).text());
 		}
-		console.log(item);
 		result.push(item);
 	}
-	console.log(result);
+	return result;
 }
 
-extractBugData();
+function executeExtractingData() {
+	var bugData = extractBugData();
+	var currentURL = window.location.toString();
+	var messageData = {};
+	messageData.from = "jira";
+	messageData.bugs = bugData;
+
+	
+	chrome.extension.sendMessage(messageData, function(response) {
+		console.log(response);
+	});
+}
+
+executeExtractingData();
+
