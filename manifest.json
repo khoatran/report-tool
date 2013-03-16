@@ -23,5 +23,5 @@
       "js": ["jira-injection.js"]
     }
   ],
-   "web_accessible_resources": ["jquery.js"]
+   "web_accessible_resources": ["jquery.js", "jira-extract.js"]
 }
