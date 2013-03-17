@@ -43,11 +43,9 @@ function executeExtractingData() {
 	messageData.from = "jira";
 	messageData.bugs = bugData;
 
-	
 	chrome.extension.sendMessage(messageData, function(response) {
-		console.log(response);
+		
 	});
 }
 
 executeExtractingData();
-

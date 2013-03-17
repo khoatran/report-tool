@@ -1,14 +1,23 @@
 <html>
 	<head>
 		<link href="report.css" rel="stylesheet" type="text/css">
+		<link rel="stylesheet" href="simple.datagrid.css">
 		<script src="jquery.js"></script>
-
+		<script src="simple.datagrid.js"></script>
 		<script src="report.js"></script>
+		<title>Pyco Project Report</title>
 	</head>
 	<body>
-		<div id="report" width="800px">
-
-		</div>
-
+		<h1>Pyco project report</h1>
+		<input id="refreshButton" type="button" value="Refresh"/>
+		<table id="projectReport">
+			<thead>
+				<tr>
+					<th width="200px">Project</th>
+					<th width="200px">Impt rat(%)</th>
+					<th width="200px">Re-open rat(%)</th>
+				</tr>
+			</thead>
+		</table>
 	</body>
 </html>

@@ -35,7 +35,7 @@ function mergeDataToProject(project, data) {
 
 function preprocessProjectData() {
 	var project = null;
-	for(var i=0;i<projects.length;i++) {
+	for ( var i = 0; i < projects.length; i++) {
 		project = projects[i];
 		preprocessBugMetric(project);
 	}
@@ -61,48 +61,41 @@ function preprocessBugMetric(project) {
 	var bugs = project.bugs;
 	var totalBug = getPersistTotalBug(bugs);
 	var totalExistBugs = getTotalExistingBugs(bugs);
-	
+
 	var existingBlockerBug = bugs[0].New + bugs[0].InProgress;
-	var existingCriticalBug = bugs[1].New + bugs[1].InProgress; 
+	var existingCriticalBug = bugs[1].New + bugs[1].InProgress;
 	var existingMajorBug = bugs[2].New + bugs[2].InProgress;
-	
-	
-	var importantBugRatio = (existingBlockerBug + existingCriticalBug + existingMajorBug) / totalExistBugs;
-	
-	var reopeningBugs = bugs[0].Reopened + bugs[1].Reopened + bugs[2].Reopened +
-	bugs[3].Reopened + bugs[4].Reopened + bugs[5].Reopened + bugs[6].Reopened;
-	var reopenBugRatio = reopeningBugs/ totalExistBugs;
-	project.reopenBugRatio = reopenBugRatio;
-	project.importantBugRatio = importantBugRatio;
+
+	var importantBugRatio = (existingBlockerBug + existingCriticalBug + existingMajorBug)
+			/ totalExistBugs;
+
+	var reopeningBugs = bugs[0].Reopened + bugs[1].Reopened + bugs[2].Reopened
+			+ bugs[3].Reopened + bugs[4].Reopened + bugs[5].Reopened
+			+ bugs[6].Reopened;
+	var reopenBugRatio = reopeningBugs / totalExistBugs;
+	project.reopenBugRatio = Math.round(reopenBugRatio * 100);
+	project.importantBugRatio = Math.round(importantBugRatio * 100);
 }
 function renderProject() {
-	var table = "";
-	table = "<table width='600px'><tr>" +
-	"<th>Project</th>" + 
-	"<th>Importance bug ratio</th>" + 
-	"<th>Reopen bug ratio</th>" +
-	"</tr>";
-	
-	for(var i=0;i<projects.length;i++) {
-		var row = "<tr>";
-		row += "<th>" + projects[i].name + "</th>";
-		row += "<th>" + projects[i].importantBugRatio + "</th>";
-		row += "<th>" + projects[i].reopenBugRatio + "</th>";
-		row += "</tr>";
-		table += row;
+	var dataArray = [];
+	var dataRow = null;
+	for ( var i = 0; i < projects.length; i++) {
+
+		dataRow = [ projects[i].name, projects[i].importantBugRatio,
+				projects[i].reopenBugRatio ];
+		dataArray.push(dataRow);
 	}
-	
-	table += "</table>";
-	$("#report").html(table);
+
+	$('#projectReport').simple_datagrid({
+		data : dataArray
+	});
 }
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	var project = getProjectFromURL(sender.tab.url);
 	mergeDataToProject(project, request);
-	sendResponse({
-		"project" : project
+	chrome.tabs.remove(sender.tab.id, function() {
 	});
-
 });
 
 function openJiraReportAllProjects() {
@@ -124,4 +117,11 @@ function openJiraReportAllProjects() {
 	}
 }
 
-openJiraReportAllProjects();
+
+
+$(document).ready(function() {
+	$("#refreshButton").bind("click", function() {
+		openJiraReportAllProjects();
+	});
+	openJiraReportAllProjects();
+});
