@@ -6,13 +6,13 @@
 	"version": "1.0",
 
 	"browser_action": {
-		"default_icon": "icon.png",
-		"default_popup": "report.html"
+		"default_icon": "icon.png"
+		
 	},
 	"background": {
 		"persistent": false,
 		"scripts": ["background.js"]
 	},
 	"permissions": ["tabs", "storage", "https://jira.pyramid-consulting.com/*"],
-	"web_accessible_resources": ["jquery.js", "jira-extract.js", "template.js"]
+	"web_accessible_resources": ["jquery.js", "jira-extract.js", "ejs.js"]
 }

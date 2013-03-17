@@ -40,20 +40,38 @@ function preprocessProjectData() {
 		preprocessBugMetric(project);
 	}
 }
+function getTotalExistingBugs(bugs) {
+	var i = 0;
+	var result = 0;
+	for (i = 0; i < bugs.length; i++) {
+		result += bugs[i].New + bugs[i].InProgress;
+	}
+	return result;
+}
+
+function getPersistTotalBug(bugs) {
+	var i = 0;
+	var result = 0;
+	for (i = 0; i < bugs.length; i++) {
+		result += bugs[i].Total;
+	}
+	return result;
+}
 function preprocessBugMetric(project) {
 	var bugs = project.bugs;
-	var totalBug = bugs[0].Total + bugs[1].Total + bugs[2].Total +
-	bugs[3].Total + bugs[4].Total + bugs[5].Total + bugs[6].Total;
-	
+	var totalBug = getPersistTotalBug(bugs);
+	var totalExistBugs = getTotalExistingBugs(bugs);
 	
 	var existingBlockerBug = bugs[0].New + bugs[0].InProgress;
 	var existingCriticalBug = bugs[1].New + bugs[1].InProgress; 
 	var existingMajorBug = bugs[2].New + bugs[2].InProgress;
-	var importantBugRatio = (existingBlockerBug + existingCriticalBug + existingMajorBug) / totalBug;
+	
+	
+	var importantBugRatio = (existingBlockerBug + existingCriticalBug + existingMajorBug) / totalExistBugs;
 	
 	var reopeningBugs = bugs[0].Reopened + bugs[1].Reopened + bugs[2].Reopened +
 	bugs[3].Reopened + bugs[4].Reopened + bugs[5].Reopened + bugs[6].Reopened;
-	var reopenBugRatio = reopeningBugs/ totalBug;
+	var reopenBugRatio = reopeningBugs/ totalExistBugs;
 	project.reopenBugRatio = reopenBugRatio;
 	project.importantBugRatio = importantBugRatio;
 }
