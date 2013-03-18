@@ -1,14 +1,3 @@
-var projects = [
-		{
-			"name" : "Hello Doctor Dedicated Team",
-			"jira_report_url" : "https://jira.pyramid-consulting.com/jira/secure/QualityReport.jspa?pid=13033",
-			"sonar_url" : ""
-		},
-		{
-			"name" : "Lactalis EDBM",
-			"jira_report_url" : "https://jira.pyramid-consulting.com/jira/secure/QualityReport.jspa?pid=12851",
-			"sonar_url" : ""
-		} ];
 var projectHaveData = 0;
 function getProjectFromURL(url) {
 	var i = 0;
@@ -25,9 +14,13 @@ function getProjectFromURL(url) {
 function mergeDataToProject(project, data) {
 	if (data.from == "jira") {
 		project.bugs = data.bugs;
+		projectHaveData += 1;
 	}
-	projectHaveData += 1;
-	if (projectHaveData == projects.length) {
+	else if(data.from == "sonar") {
+		project.sonar = data.sonar;
+	}
+	console.log(project);
+	if(projectHaveData == projects.length) {
 		preprocessProjectData();
 		renderProject();
 	}
@@ -57,8 +50,10 @@ function getPersistTotalBug(bugs) {
 	}
 	return result;
 }
+
 function preprocessBugMetric(project) {
 	var bugs = project.bugs;
+	
 	var totalBug = getPersistTotalBug(bugs);
 	var totalExistBugs = getTotalExistingBugs(bugs);
 
@@ -76,13 +71,30 @@ function preprocessBugMetric(project) {
 	project.reopenBugRatio = Math.round(reopenBugRatio * 100);
 	project.importantBugRatio = Math.round(importantBugRatio * 100);
 }
+
 function renderProject() {
 	var dataArray = [];
 	var dataRow = null;
+	var sonarBlocker = 0;
+	var sonarCritical = 0;
+	var sonarMajor = 0;
+	
 	for ( var i = 0; i < projects.length; i++) {
-
-		dataRow = [ projects[i].name, projects[i].importantBugRatio,
-				projects[i].reopenBugRatio ];
+		sonarBlocker = 0;
+		sonarCritical = 0;
+		sonarMajor = 0;
+		if(projects[i].sonar != undefined) {
+			sonarBlocker = projects[i].sonar.blocker;
+			sonarCritical = projects[i].sonar.critical;
+			sonarMajor = projects[i].sonar.major
+		}
+		dataRow = [ projects[i].name, 
+		            projects[i].importantBugRatio,
+				projects[i].reopenBugRatio, 
+				sonarBlocker,
+				sonarCritical, 
+				sonarMajor
+				];
 		dataArray.push(dataRow);
 	}
 
@@ -93,6 +105,7 @@ function renderProject() {
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	var project = getProjectFromURL(sender.tab.url);
+	console.log(request);
 	mergeDataToProject(project, request);
 	chrome.tabs.remove(sender.tab.id, function() {
 	});
@@ -100,12 +113,11 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 
 function openJiraReportAllProjects() {
 	var i;
-	var tabs = new Array();
+
 	for (i = 0; i < projects.length; i++) {
 		chrome.tabs.create({
 			url : projects[i].jira_report_url
 		}, function(tab) {
-			tabs.push(tab);
 			chrome.tabs.executeScript(tab.id, {
 				file : 'jquery.js'
 			}, function() {
@@ -117,11 +129,32 @@ function openJiraReportAllProjects() {
 	}
 }
 
+function openSonarReportAllProjects() {
+	for (i = 0; i < projects.length; i++) {
+		if (projects[i].sonar_url != "") {
+			chrome.tabs.create({
+				url : projects[i].sonar_url
+			}, function(tab) {
+				chrome.tabs.executeScript(tab.id, {
+					file : 'jquery.js'
+				}, function() {
+					chrome.tabs.executeScript(tab.id, {
+						file : 'sonar-extract.js'
+					});
+				});
+			});
+		}
+	}
+}
 
+function doReport() {
+	openJiraReportAllProjects();
+	openSonarReportAllProjects();
+}
 
 $(document).ready(function() {
 	$("#refreshButton").bind("click", function() {
-		openJiraReportAllProjects();
+		doReport();
 	});
-	openJiraReportAllProjects();
+	doReport();
 });

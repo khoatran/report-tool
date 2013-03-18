@@ -44,7 +44,7 @@ function executeExtractingData() {
 	messageData.bugs = bugData;
 
 	chrome.extension.sendMessage(messageData, function(response) {
-		
+
 	});
 }
 
