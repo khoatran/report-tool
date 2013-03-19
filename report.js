@@ -3,7 +3,8 @@ function getProjectFromURL(url) {
 	var i = 0;
 	var result = null;
 	for (i = 0; i < projects.length; i++) {
-		if (projects[i].jira_report_url == url || projects[i].sonar_url == url) {
+		if (projects[i].jira_report_url == url || projects[i].sonar_url == url 
+				|| projects[i].jira_obvious_filter_url == url) {
 			result = projects[i];
 			break;
 		}
@@ -17,6 +18,8 @@ function mergeDataToProject(project, data) {
 		projectHaveData += 1;
 	} else if (data.from == "sonar") {
 		project.sonar = data.sonar;
+	} else if (data.from == "jira-obvious") {
+		project.obviousBug = data.obviousBug;
 	}
 
 }
@@ -47,13 +50,13 @@ function getPersistTotalBug(bugs) {
 }
 
 function preprocessBugMetric(project) {
-	
+
 	var bugs = project.bugs;
-	if(project.bugs == undefined) {
+	if (project.bugs == undefined) {
 		return;
 	}
 	var totalExistBugs = getTotalExistingBugs(bugs);
-
+	var totalPersistBugs = getPersistTotalBug(bugs);
 	var existingBlockerBug = bugs[0].Total - bugs[0].Closed;
 	var existingCriticalBug = bugs[1].Total - bugs[1].Closed;
 	var existingMajorBug = bugs[2].Total - bugs[2].Closed;
@@ -63,12 +66,17 @@ function preprocessBugMetric(project) {
 			+ bugs[3].Reopened + bugs[4].Reopened + bugs[5].Reopened
 			+ bugs[6].Reopened;
 	var reopenBugRatio = 0;
+	var obviousBugRatio = 0;
+	if(totalPersistBugs > 0) {
+		obviousBugRatio = project.obviousBug / totalPersistBugs;
+	}
+	
 	if (totalExistBugs > 0) {
 		importantBugRatio = (existingBlockerBug + existingCriticalBug + existingMajorBug)
 				/ totalExistBugs;
 		reopenBugRatio = reopeningBugs / totalExistBugs;
 	}
-
+	project.obviousBugRatio = Math.round(obviousBugRatio * 100);
 	project.reopenBugRatio = Math.round(reopenBugRatio * 100);
 	project.importantBugRatio = Math.round(importantBugRatio * 100);
 }
@@ -90,8 +98,9 @@ function renderProject() {
 			sonarMajor = projects[i].sonar.major
 		}
 		dataRow = [ projects[i].name, projects[i].importantBugRatio,
-				projects[i].reopenBugRatio, sonarBlocker, sonarCritical,
-				sonarMajor ];
+				projects[i].reopenBugRatio, projects[i].obviousBugRatio, 
+				sonarBlocker, sonarCritical, sonarMajor ];
+				
 		dataArray.push(dataRow);
 	}
 
@@ -112,17 +121,40 @@ function openJiraReportAllProjects() {
 	var i;
 
 	for (i = 0; i < projects.length; i++) {
-		chrome.tabs.create({
-			url : projects[i].jira_report_url
-		}, function(tab) {
-			chrome.tabs.executeScript(tab.id, {
-				file : 'jquery.js'
-			}, function() {
+		if (projects[i].jira_report_url != "") {
+			chrome.tabs.create({
+				url : projects[i].jira_report_url
+			}, function(tab) {
 				chrome.tabs.executeScript(tab.id, {
-					file : 'jira-extract.js'
+					file : 'jquery.js'
+				}, function() {
+					chrome.tabs.executeScript(tab.id, {
+						file : 'jira-extract.js'
+					});
 				});
 			});
-		});
+		}
+
+	}
+}
+
+function openJiraObviousReportAllProjects() {
+	var i;
+
+	for (i = 0; i < projects.length; i++) {
+		if (projects[i].jira_obvious_filter_url != "") {
+			chrome.tabs.create({
+				url : projects[i].jira_obvious_filter_url
+			}, function(tab) {
+				chrome.tabs.executeScript(tab.id, {
+					file : 'jquery.js'
+				}, function() {
+					chrome.tabs.executeScript(tab.id, {
+						file : 'jira-extract-obvious-bug.js'
+					});
+				});
+			});
+		}
 	}
 }
 
@@ -146,6 +178,7 @@ function openSonarReportAllProjects() {
 
 function doReport() {
 	openJiraReportAllProjects();
+	openJiraObviousReportAllProjects();
 	openSonarReportAllProjects();
 }
 

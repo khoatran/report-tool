@@ -7,16 +7,11 @@
 
 	"browser_action": {
 		"default_icon": "icon.png"
-		
 	},
 	"background": {
 		"persistent": false,
 		"scripts": ["background.js"]
 	},
-	"permissions": ["tabs", "storage", 
-	"https://jira.pyramid-consulting.com/*",
-	"http://sonar.pyramid-consulting.com/sonar/*"],
-	"web_accessible_resources": ["jquery.js", "jira-extract.js", "ejs.js"]
-	
-	
+	"permissions": ["tabs", "storage", "https://jira.pyramid-consulting.com/*", "http://sonar.pyramid-consulting.com/sonar/*"],
+	"web_accessible_resources": ["jquery.js", "jira-extract.js", "jira-extract-obvious-bug.js", "ejs.js"]
 }
