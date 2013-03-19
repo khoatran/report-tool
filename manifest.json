@@ -17,4 +17,6 @@
 	"https://jira.pyramid-consulting.com/*",
 	"http://sonar.pyramid-consulting.com/sonar/*"],
 	"web_accessible_resources": ["jquery.js", "jira-extract.js", "ejs.js"]
+	
+	
 }

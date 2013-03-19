@@ -15,15 +15,10 @@ function mergeDataToProject(project, data) {
 	if (data.from == "jira") {
 		project.bugs = data.bugs;
 		projectHaveData += 1;
-	}
-	else if(data.from == "sonar") {
+	} else if (data.from == "sonar") {
 		project.sonar = data.sonar;
 	}
-	console.log(project);
-	if(projectHaveData == projects.length) {
-		preprocessProjectData();
-		renderProject();
-	}
+
 }
 
 function preprocessProjectData() {
@@ -37,7 +32,7 @@ function getTotalExistingBugs(bugs) {
 	var i = 0;
 	var result = 0;
 	for (i = 0; i < bugs.length; i++) {
-		result += bugs[i].New + bugs[i].InProgress;
+		result += bugs[i].Total - bugs[i].Closed;
 	}
 	return result;
 }
@@ -52,22 +47,28 @@ function getPersistTotalBug(bugs) {
 }
 
 function preprocessBugMetric(project) {
-	var bugs = project.bugs;
 	
-	var totalBug = getPersistTotalBug(bugs);
+	var bugs = project.bugs;
+	if(project.bugs == undefined) {
+		return;
+	}
 	var totalExistBugs = getTotalExistingBugs(bugs);
 
-	var existingBlockerBug = bugs[0].New + bugs[0].InProgress;
-	var existingCriticalBug = bugs[1].New + bugs[1].InProgress;
-	var existingMajorBug = bugs[2].New + bugs[2].InProgress;
-
-	var importantBugRatio = (existingBlockerBug + existingCriticalBug + existingMajorBug)
-			/ totalExistBugs;
-
+	var existingBlockerBug = bugs[0].Total - bugs[0].Closed;
+	var existingCriticalBug = bugs[1].Total - bugs[1].Closed;
+	var existingMajorBug = bugs[2].Total - bugs[2].Closed;
+	var totalExistingImpBugs = (existingBlockerBug + existingCriticalBug + existingMajorBug);
+	var importantBugRatio = 0;
 	var reopeningBugs = bugs[0].Reopened + bugs[1].Reopened + bugs[2].Reopened
 			+ bugs[3].Reopened + bugs[4].Reopened + bugs[5].Reopened
 			+ bugs[6].Reopened;
-	var reopenBugRatio = reopeningBugs / totalExistBugs;
+	var reopenBugRatio = 0;
+	if (totalExistBugs > 0) {
+		importantBugRatio = (existingBlockerBug + existingCriticalBug + existingMajorBug)
+				/ totalExistBugs;
+		reopenBugRatio = reopeningBugs / totalExistBugs;
+	}
+
 	project.reopenBugRatio = Math.round(reopenBugRatio * 100);
 	project.importantBugRatio = Math.round(importantBugRatio * 100);
 }
@@ -78,23 +79,19 @@ function renderProject() {
 	var sonarBlocker = 0;
 	var sonarCritical = 0;
 	var sonarMajor = 0;
-	
+
 	for ( var i = 0; i < projects.length; i++) {
 		sonarBlocker = 0;
 		sonarCritical = 0;
 		sonarMajor = 0;
-		if(projects[i].sonar != undefined) {
+		if (projects[i].sonar != undefined) {
 			sonarBlocker = projects[i].sonar.blocker;
 			sonarCritical = projects[i].sonar.critical;
 			sonarMajor = projects[i].sonar.major
 		}
-		dataRow = [ projects[i].name, 
-		            projects[i].importantBugRatio,
-				projects[i].reopenBugRatio, 
-				sonarBlocker,
-				sonarCritical, 
-				sonarMajor
-				];
+		dataRow = [ projects[i].name, projects[i].importantBugRatio,
+				projects[i].reopenBugRatio, sonarBlocker, sonarCritical,
+				sonarMajor ];
 		dataArray.push(dataRow);
 	}
 
@@ -105,7 +102,7 @@ function renderProject() {
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	var project = getProjectFromURL(sender.tab.url);
-	console.log(request);
+
 	mergeDataToProject(project, request);
 	chrome.tabs.remove(sender.tab.id, function() {
 	});
@@ -153,8 +150,13 @@ function doReport() {
 }
 
 $(document).ready(function() {
-	$("#refreshButton").bind("click", function() {
+	$("#extractDataButton").bind("click", function() {
 		doReport();
+	});
+
+	$("#refreshReportButton").bind("click", function() {
+		preprocessProjectData();
+		renderProject();
 	});
 	doReport();
 });

@@ -5,23 +5,27 @@
 		<script src="project-data.js"></script>
 		<script src="jquery.js"></script>
 		<script src="simple.datagrid.js"></script>
+		<script src="handlebars.js"></script>
 		<script src="report.js"></script>
 		<title>Pyco Project Report</title>
 	</head>
 	<body>
 		<h1>Pyco project report</h1>
-		<input id="refreshButton" type="button" value="Refresh"/>
+		<input id="extractDataButton" type="button" value="Extract data"/>
+		<input id="refreshReportButton" type="button" value="Display report"/>
 		<table id="projectReport">
 			<thead>
 				<tr>
 					<th width="200px">Project</th>
-					<th>Impt rat(%)</th>
-					<th>Re-open rat(%)</th>
+					<th>Important bug rat(%)</th>
+					<th>Re-open bug rat(%)</th>
 					<th>Sonar blocker violation</th>
 					<th>Sonar critical violation</th>
 					<th>Sonar major violation</th>
 				</tr>
 			</thead>
+
 		</table>
+		
 	</body>
 </html>
