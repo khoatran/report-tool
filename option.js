@@ -1,99 +1,91 @@
-var projectData = [
-		{
-			"name" : "FOLUP V3",
-			"jira_report_url" : "https://jira.pyramid-consulting.com/jira/secure/QualityReport.jspa?pid=12895",
-			"jira_obvious_filter_url" : "",
-			"sonar_url" : "http://sonar.pyramid-consulting.com/sonar/dashboard/index/12166"
-		},
-		{
-			"name" : "PCP",
-			"jira_report_url" : "https://jira.pyramid-consulting.com/jira/secure/QualityReport.jspa?pid=11966",
-			"jira_obvious_filter_url" : "https://jira.pyramid-consulting.com/jira/secure/IssueNavigator.jspa?mode=hide&requestId=13792",
-			"sonar_url" : "http://sonar.pyramid-consulting.com/sonar/dashboard/index/10113"
-		},
-		{
-			"name" : "Belga Sport System",
-			"jira_report_url" : "https://jira.pyramid-consulting.com/jira/secure/QualityReport.jspa?pid=12262",
-			"jira_obvious_filter_url" : "",
-			"sonar_url" : "http://sonar.pyramid-consulting.com/sonar/dashboard/index/18978"
-		},
-		{
-			"name" : "Belga Dashboard",
-			"jira_report_url" : "https://jira.pyramid-consulting.com/jira/secure/QualityReport.jspa?pid=12342",
-			"jira_obvious_filter_url" : "",
-			"sonar_url" : "http://sonar.pyramid-consulting.com/sonar/dashboard/index/20765"
-		},
-		{
-			"name" : "ADP Dedicated team",
-			"jira_report_url" : "https://jira.pyramid-consulting.com/jira/secure/QualityReport.jspa?pid=12660",
-			"jira_obvious_filter_url" : "",
-			"sonar_url" : "http://sonar.pyramid-consulting.com/sonar/dashboard/index/2745"
-		},
-		{
-			"name" : "Smollan Field Sales Manager",
-			"jira_report_url" : "https://jira.pyramid-consulting.com/jira/secure/QualityReport.jspa?pid=12594",
-			"jira_obvious_filter_url" : "",
-			"sonar_url" : "http://sonar.pyramid-consulting.com/sonar/dashboard/index/27548"
-		},
-		{
-			"name" : "Lactalis Envie de bien manger",
-			"jira_report_url" : "https://jira.pyramid-consulting.com/jira/secure/QualityReport.jspa?pid=12851",
-			"jira_obvious_filter_url" : "",
-			"sonar_url" : "http://sonar.pyramid-consulting.com/sonar/dashboard/index/28096"
-		},
-		{
-			"name" : "Mustela",
-			"jira_report_url" : "https://jira.pyramid-consulting.com/jira/secure/QualityReport.jspa?pid=12827",
-			"jira_obvious_filter_url" : "",
-			"sonar_url" : "http://sonar.pyramid-consulting.com/sonar/dashboard/index/24807"
-		},
-		{
-			"name" : "Optic Shoping",
-			"jira_report_url" : "https://jira.pyramid-consulting.com/jira/secure/QualityReport.jspa?pid=12894",
-			"jira_obvious_filter_url" : "",
-			"sonar_url" : "http://sonar.pyramid-consulting.com/sonar/dashboard/index/23475"
-		},
-		{
-			"name" : "Hello Doctor Dedicated Team",
-			"jira_report_url" : "https://jira.pyramid-consulting.com/jira/secure/QualityReport.jspa?pid=13033",
-			"jira_obvious_filter_url" : "",
-			"sonar_url" : ""
-		} ];
+var projectData = [];
+		
 $(document).ready(function() {
-	$('#projectData').simple_datagrid();
+
 	$('#btnSave').bind("click", function() {
 		saveOptions();
 		console.log("Save");
 	});
-	
-	$('#btnDelete').bind("click", function() {
-		console.log("Delete");
+
+	$('#btnCancel').bind("click", function() {
+		console.log("Cancel");
 	});
 });
 
 function saveOptions() {
-	var projectName = $("#projectName").val();
-	var jiraQualityReportURL = $("#jiraQualityURL").val();
-	var jiraObviousBugURL = $("#jiraObviousBugURL").val();
-	var sonarURL = $("#sonarURL").val();
-	
-	var projectItem = {
+	if (projectData || projectData == null) {
+		projectData = [];
+	}
+	if (validate()) {
+		var projectName = $("#projectName").val();
+		var jiraQualityReportURL = $("#jiraQualityURL").val();
+		var jiraObviousBugURL = $("#jiraObviousBugURL").val();
+		var sonarURL = $("#sonarURL").val();
+		var projectItem = {
 			"name" : projectName,
 			"jira_report_url" : jiraQualityReportURL,
 			"jira_obvious_filter_url" : jiraObviousBugURL,
 			"sonar_url" : sonarURL
 		};
-	//TODO need validation
-	if(projectData || projectData == null) {
-		projectData = [];
+		projectData.push(projectItem);
+		localStorage["projectData"] = JSON.stringify(projectData);
+		reloadProjectGrid();
 	}
-	projectData.push(projectItem);
-	localStorage["projectData"] = JSON.stringify(projectData);
 }
+function validate() {
+	var projectName = $("#projectName").val();
+	var jiraQualityReportURL = $("#jiraQualityURL").val();
+	var jiraObviousBugURL = $("#jiraObviousBugURL").val();
+	var sonarURL = $("#sonarURL").val();
+
+	return projectName != "" && jiraQualityReportURL != "";
+}
+
+function reloadProjectGrid() {
+	var i = 0;
+	var project = null;
+	var tbody = $("#projectData").find("tbody");
+	tbody.empty();
+	var i = 0;
+	var htmlRowsString = "";
+	for (i = 0; i < projectData.length; i++) {
+		htmlRowsString += buildProjectRow(projectData[i], i);
+	}
+	tbody.append(htmlRowsString);
+}
+
+function buildProjectRow(project, index) {
+	var rowString = "<tr>";
+	var emptyLinkCol = "<td><i class='icon-thumbs-down'></i></td>";
+	var actionCol = "<td><button class='btn btn-success btnModify'>Modify</button> <button class='btn btn-danger btnDelete'>Delete</button></td>"
+	rowString += "<td>" + (index + 1) + "</td>";
+	rowString += "<td>" + project.name + "</td>";
+	if (project.jira_report_url != "") {
+		rowString += "<td><a class='btn btn-link' href='"
+				+ project.jira_report_url + "'>Link</a></td>";
+	} else {
+		rowString += emptyLinkCol;
+	}
+	if (project.jira_obvious_filter_url != "") {
+		rowString += "<td><a class='btn btn-link' href='"
+				+ project.jira_obvious_filter_url + "'>Link</a></td>";
+	} else {
+		rowString += emptyLinkCol;
+	}
+	if (project.sonar_url != "") {
+		rowString += "<td><a class='btn btn-link' href='" + project.sonar_url
+				+ "'>Link</a></td>";
+	} else {
+		rowString += emptyLinkCol;
+	}
+	rowString += actionCol;
+	rowString += "</tr>";
+	return rowString;
+}
+
 function restoreOptions() {
-	  
 	projectData = JSON.parse(localStorage["projectData"]);
-	console.log("Restore option");
+	reloadProjectGrid();
 }
 
 document.addEventListener('DOMContentLoaded', restoreOptions);
