@@ -196,7 +196,7 @@ function doReport() {
 }
 
 $(document).ready(function() {
-	projects = JSON.parse(localStorage["projectData"]);
+	//projects = JSON.parse(localStorage["projectData"]);
 	
 	$("#extractDataButton").bind("click", function() {
 		doReport();

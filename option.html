@@ -11,12 +11,36 @@
 
 		<div class="container">
 
-			<form>
+			<form id="inputForm">
 				<h2 class="form-signin-heading">Pyco project report - options</h2>
-				<input id="projectName" type="text" class="input-block-level" placeholder="Project name">
-				<input id="jiraQualityURL" type="url" class="input-block-level" placeholder="Jira quality report URL">
-				<input id="jiraObviousBugURL" type="url" class="input-block-level" placeholder="Jira obvious bug report URL">
-				<input id="sonarURL" type="url" class="input-block-level" placeholder="Sonar URL">
+				<div id="projectNameGroup" class="control-group">
+					<div class="controls">
+						<input id="projectName" type="text" class="input-block-level" placeholder="Project name">
+						<span id="errProjectName" class="help-inline"></span>
+					</div>
+				</div>
+				
+				<div id="jiraQualityURLGroup" class="control-group">
+					<div class="controls">
+						<input id="jiraQualityURL" type="url" class="input-block-level" placeholder="Jira quality report URL">
+						<span id="errJiraQualityURL" class="help-inline"></span>
+					</div>
+				</div>
+
+				<div id="jiraObviousBugURLGroup" class="control-group">
+					<div class="controls">
+						<input id="jiraObviousBugURL" type="url" class="input-block-level" placeholder="Jira obvious bug report URL">
+						<span id="errJiraObviousBugURL" class="help-inline"></span>
+					</div>
+				</div>
+				
+				<div id="sonarURLGroup" class="control-group">
+					<div class="controls">
+						<input id="sonarURL" type="url" class="input-block-level" placeholder="Sonar URL">
+						<span id="errSonarURL" class="help-inline"></span>
+					</div>
+				</div>
+				
 
 				<button id="btnSave" class="btn btn-success" type="button">
 					Save
@@ -26,7 +50,7 @@
 				</button>
 
 			</form>
-			
+
 			<table id="projectData" class="table table-bordered table-hover table-striped">
 				<thead>
 					<tr>
