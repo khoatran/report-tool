@@ -3,7 +3,7 @@ function getProjectFromURL(url) {
 	var i = 0;
 	var result = null;
 	for (i = 0; i < projects.length; i++) {
-		if (projects[i].jira_report_url == url || projects[i].sonar_url == url 
+		if (projects[i].jira_report_url == url || projects[i].sonar_url == url
 				|| projects[i].jira_obvious_filter_url == url) {
 			result = projects[i];
 			break;
@@ -67,13 +67,13 @@ function preprocessBugMetric(project) {
 			+ bugs[6].Reopened;
 	var reopenBugRatio = 0;
 	var obviousBugRatio = 0;
-	if(project.obviousBug == undefined) {
+	if (project.obviousBug == undefined) {
 		project.obviousBug = 0;
 	}
-	if(totalPersistBugs > 0) {
+	if (totalPersistBugs > 0) {
 		obviousBugRatio = project.obviousBug / totalPersistBugs;
 	}
-	
+
 	if (totalExistBugs > 0) {
 		importantBugRatio = (existingBlockerBug + existingCriticalBug + existingMajorBug)
 				/ totalExistBugs;
@@ -85,31 +85,41 @@ function preprocessBugMetric(project) {
 }
 
 function renderProject() {
-	var dataArray = [];
-	var dataRow = null;
+	buildReportTable(projects, "#projectReport");
+}
+
+function buildReportTable(data, tableID) {
+	var tbody = $(tableID).find("tbody");
+	tbody.empty();
+	var i = 0;
+	var htmlRowsString = "";
+	for (i = 0; i < projects.length; i++) {
+		htmlRowsString += buildReportRow(projects[i], i);
+	}
+	tbody.append(htmlRowsString);
+}
+
+function buildReportRow(project, index) {
 	var sonarBlocker = 0;
 	var sonarCritical = 0;
 	var sonarMajor = 0;
-
-	for ( var i = 0; i < projects.length; i++) {
-		sonarBlocker = 0;
-		sonarCritical = 0;
-		sonarMajor = 0;
-		if (projects[i].sonar != undefined) {
-			sonarBlocker = projects[i].sonar.blocker;
-			sonarCritical = projects[i].sonar.critical;
-			sonarMajor = projects[i].sonar.major
-		}
-		dataRow = [ projects[i].name, projects[i].importantBugRatio,
-				projects[i].reopenBugRatio, projects[i].obviousBugRatio, 
-				sonarBlocker, sonarCritical, sonarMajor ];
-				
-		dataArray.push(dataRow);
+	console.log(project);
+	if(project.sonar != undefined) {
+		sonarBlocker = project.sonar.blocker;
+		sonarCritical = project.sonar.critical;
+		sonarMajor = project.sonar.major;
 	}
-
-	$('#projectReport').simple_datagrid({
-		data : dataArray
-	});
+	
+	var rowString = "<tr>";
+	rowString += "<td>" + project.name + "</td>";
+	rowString += "<td>" + project.importantBugRatio + "</td>";
+	rowString += "<td>" + project.reopenBugRatio + "</td>";
+	rowString += "<td>" + project.obviousBugRatio + "</td>";
+	rowString += "<td>" + sonarBlocker + "</td>";
+	rowString += "<td>" + sonarCritical + "</td>";
+	rowString += "<td>" + sonarMajor + "</td>";
+	rowString += "</tr>"
+	return rowString;
 }
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {

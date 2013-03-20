@@ -1,32 +1,72 @@
 <html>
 	<head>
 		<link href="report.css" rel="stylesheet" type="text/css">
-		<link rel="stylesheet" href="simple.datagrid.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css" media="screen">
+		
+		<style>
+			body {
+				padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+			}
+		</style>
 		<script src="project-data.js"></script>
 		<script src="jquery.js"></script>
+
+		<script src="bootstrap/js/bootstrap.min.js"></script>
 		<script src="simple.datagrid.js"></script>
-		<script src="handlebars.js"></script>
+
 		<script src="report.js"></script>
 		<title>Pyco Project Report</title>
 	</head>
 	<body>
-		<h1>Pyco project report</h1>
-		<input id="extractDataButton" type="button" value="Extract data"/>
-		<input id="refreshReportButton" type="button" value="Display report"/>
-		<table id="projectReport">
-			<thead>
-				<tr>
-					<th width="200px">Project</th>
-					<th>Important bug rat(%)</th>
-					<th>Re-open bug rat(%)</th>
-					<th>Obvious bug rat(%)</th>
-					<th>Sonar blocker violation</th>
-					<th>Sonar critical violation</th>
-					<th>Sonar major violation</th>
-				</tr>
-			</thead>
+		<div class="navbar navbar-inverse navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container">
+					<a class="brand" href="#">Pyco project report</a>
+					<div class="nav-collapse collapse">
+						<ul class="nav">
+							<li class="active">
+								<a href="#">Home</a>
+							</li>
+							<li>
+								<a href="#about">About</a>
+							</li>
+							<li>
+								<a href="#contact">Contact</a>
+							</li>
+						</ul>
+					</div><!--/.nav-collapse -->
+				</div>
+			</div>
+		</div>
 
-		</table>
-		
+		<div class="container">
+
+			<button id="extractDataButton" class="btn btn-primary">
+				Extract data
+			</button>
+			<button id="refreshReportButton" class="btn btn-primary">
+				Display report
+			</button>
+
+			<table id="projectReport" class="table table-bordered table-hover table-striped">
+				<thead>
+					<tr>
+						<td width="200px">Project</td>
+						<td>Important bug(%)</td>
+						<td>Re-open bug(%)</td>
+						<td>Obvious bug(%)</td>
+						<td>Sonar blocker violation</td>
+						<td>Sonar critical violation</td>
+						<td>Sonar major violation</td>
+					</tr>
+				</thead>
+				<tbody>
+					
+				</tbody>
+			</table>
+
+		</div>
+
 	</body>
 </html>
