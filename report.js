@@ -67,6 +67,9 @@ function preprocessBugMetric(project) {
 			+ bugs[6].Reopened;
 	var reopenBugRatio = 0;
 	var obviousBugRatio = 0;
+	if(project.obviousBug == undefined) {
+		project.obviousBug = 0;
+	}
 	if(totalPersistBugs > 0) {
 		obviousBugRatio = project.obviousBug / totalPersistBugs;
 	}

@@ -1,0 +1,46 @@
+<html>
+	<head>
+		<link href="report.css" rel="stylesheet" type="text/css">
+		<link rel="stylesheet" href="simple.datagrid.css">
+		<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+		
+		<script src="jquery.js"></script>
+		<script src="simple.datagrid.js"></script>
+		<script src="option.js"></script>
+		<title>Pyco Project Report - Options</title>
+	</head>
+	<body>
+
+		<div class="container">
+
+			<form>
+				<h2 class="form-signin-heading">Pyco project report - options</h2>
+				<input id="projectName" type="text" class="input-block-level" placeholder="Project name">
+				<input id="jiraQualityURL" type="url" class="input-block-level" placeholder="Jira quality report URL">
+				<input id="jiraObviousBugURL" type="url" class="input-block-level" placeholder="Jira obvious bug report URL">
+				<input id="sonarURL" type="url" class="input-block-level" placeholder="Sonar URL">
+
+				<button id="btnSave" class="btn btn-large btn-primary" type="button">
+					Save
+				</button>
+				<button id="btnDelete" class="btn btn-large btn-primary" type="button">
+					Delete
+				</button>
+
+			</form>
+			<table id="projectData">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th width="200px">Project</th>
+						<th>Jira quality report URL</th>
+						<th>Jira obvious bug filter URL</th>
+						<th>Sonar url</th>
+					</tr>
+				</thead>
+			</table>
+
+		</div>
+
+	</body>
+</html>
