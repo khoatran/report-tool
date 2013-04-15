@@ -190,6 +190,7 @@ function openSonarReportAllProjects() {
 }
 
 function doReport() {
+	
 	openJiraReportAllProjects();
 	openJiraObviousReportAllProjects();
 	openSonarReportAllProjects();
